@@ -72,40 +72,6 @@ namespace XmlUploader.ApiServiceFileAPI.Test
         }
 
         /// <summary>
-        /// Wih a valid xml file should return true
-        /// </summary>
-        /// <returns></returns>
-        [Theory]
-        [InlineData("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<company>\r\n  <employees>\r\n    <employee>\r\n      <id>1</id>\r\n      <name>John Doe</name>\r\n      <position>Software Engineer</position>\r\n      <department>Engineering</department>\r\n    </employee>\r\n  </employees>\r\n</company>")]
-        public void ConvertXmlToJson_Convert_Valid_XmlContentAsync(string validXmlContent)
-        {
-            // Arrange
-            int fileLength = 111;
-            string validFileNameAndExtenstion = "valid.xml";
-
-            Mock<IFormFile> formFile = new Mock<IFormFile>();
-
-            // Set up the form file with a stream containing the expected file contents
-            Mock<IFormCollection> forms = MockXmlFile(validXmlContent, fileLength, validFileNameAndExtenstion, formFile);
-
-
-            // Set up the context
-            _filesController.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext()
-            };
-
-            // Set up the forms
-            _filesController.Request.Form = forms.Object;
-
-            // Act - Invoke the method
-            var response = _filesController.ConvertXmlToJson(formFile.Object, validFileNameAndExtenstion);
-
-            // Assert
-            Assert.True(response.IsSuccess);
-        }
-
-        /// <summary>
         /// With a valid xml file and valid file name extension should return true
         /// </summary>
         /// <param name="validXmlContent"></param>
@@ -175,11 +141,11 @@ namespace XmlUploader.ApiServiceFileAPI.Test
         }
 
         /// <summary>
-        /// Wih a valid xml file an empty file name should return false
+        /// Wih a valid xml file an null file name should return false
         /// </summary>
         /// <returns></returns>
         [Theory]
-        [InlineData("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<company>\r\n  <employees>\r\n    <employee>\r\n      <id>1</id>\r\n      <name>John Doe</name>\r\n      <position>Software Engineer</position>\r\n      <department>Engineering</department>\r\n    </employee>\r\n  </employees>\r\n</company>", "")]
+        [InlineData("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<company>\r\n  <employees>\r\n    <employee>\r\n      <id>1</id>\r\n      <name>John Doe</name>\r\n      <position>Software Engineer</position>\r\n      <department>Engineering</department>\r\n    </employee>\r\n  </employees>\r\n</company>", null)]
         public void ConvertXmlToJson_Convert_Valid_XmlContent_With_Null_FileName(string validXmlContent, string fileName)
         {
             // Arrange   
@@ -207,11 +173,11 @@ namespace XmlUploader.ApiServiceFileAPI.Test
         }
 
         /// <summary>
-        /// Wih a valid xml file an null file name should return false
+        /// Wih a valid xml file an empty file name should return false
         /// </summary>
         /// <returns></returns>
         [Theory]
-        [InlineData("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<company>\r\n  <employees>\r\n    <employee>\r\n      <id>1</id>\r\n      <name>John Doe</name>\r\n      <position>Software Engineer</position>\r\n      <department>Engineering</department>\r\n    </employee>\r\n  </employees>\r\n</company>", null)]
+        [InlineData("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<company>\r\n  <employees>\r\n    <employee>\r\n      <id>1</id>\r\n      <name>John Doe</name>\r\n      <position>Software Engineer</position>\r\n      <department>Engineering</department>\r\n    </employee>\r\n  </employees>\r\n</company>", "")]
         public void ConvertXmlToJson_Convert_Valid_XmlContent_With_Empty_FileName(string validXmlContent, string fileName)
         {
             // Arrange
