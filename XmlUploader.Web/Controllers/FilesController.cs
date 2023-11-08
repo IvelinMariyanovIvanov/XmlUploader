@@ -22,18 +22,11 @@ namespace XmlUploader.Web.Controllers
 {
     public class FilesController : Controller
     {
-        private readonly IWebHostEnvironment _hostEnvironment;
         private readonly IFileApiService _fileApiService;
 
-        public FilesController(IWebHostEnvironment hostEnvironment, IFileApiService fileApiService)
+        public FilesController(IFileApiService fileApiService)
         {
-            _hostEnvironment = hostEnvironment;
             _fileApiService = fileApiService;
-        }
-
-        public ActionResult UploadedFiles()
-        {
-            return View();
         }
 
         public ActionResult Upload()
@@ -45,22 +38,19 @@ namespace XmlUploader.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadAsync(UploadFileVM form)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return View(form);
 
-            // check if files are valid xml files
-            foreach (IFormFile file in form.MultipleFiles)
+            List<string> notificationErrors = new List<string>();
+            List<string> notificationSuccess = new List<string>();
+
+            //check if files are valid xml files
+            bool areXmlExtensions = CheckForXmlExtension(form, notificationErrors);
+
+            if (areXmlExtensions == false)
             {
-                string fileName = Path.GetFileNameWithoutExtension(file.FileName);
-                string extension = Path.GetExtension(file.FileName);
-
-                if (extension != ".xml")
-                {
-                    TempData["error"] = $"The {fileName} is not a xml file";
-                    form.Errors.Add($"The {fileName} is not a xml file");
-
-                    return View(form);
-                }
+                TempData["error"] = notificationErrors;
+                return View(form);
             }
 
             Dictionary<string, Task<ResponseDto>> apiTasks = CreateConcurrencyApiTasks(form);
@@ -76,7 +66,7 @@ namespace XmlUploader.Web.Controllers
                 // check for server error
                 if (response == null || response.IsSuccess == false)
                 {
-                    TempData["error"] = $"{fileName} - {response.ErrorMessage}";
+                    notificationErrors.Add($"{fileName} - {response.ErrorMessage}");
                     form.Errors.Add($"{fileName} - {response.ErrorMessage}");
                 }
                 else
@@ -89,22 +79,51 @@ namespace XmlUploader.Web.Controllers
 
                         await SaveJsonFileToUserDirectory(filePath, serializedFile);
 
-                        TempData["success"] = $"Successfully converted {fileName} file";
+                        notificationSuccess.Add($"Successfully converted {fileName} file");
                     }
                     // file system error
                     catch (DirectoryNotFoundException)
                     {
-                        TempData["error"] = $"Please enter a valid directory path";
+                        notificationErrors.Add($"Download directory {form.DownloadDirectory} is not valid");
                         form.Errors.Add($"Download directory {form.DownloadDirectory} is not valid");
                     }
                     catch (Exception)
                     {
-                        TempData["error"] = "Can not convert file to json file";
+                        notificationErrors.Add("Can not convert file to json file");
                         form.Errors.Add($"Can not convert {fileName} to json file");
                     }
                 }
             }
+
+            if (notificationErrors.Count > 0)
+                TempData["error"] = notificationErrors;
+
+            if(notificationSuccess.Count > 0)
+                TempData["success"] = notificationSuccess;
+
             return View(form);
+        }
+
+        [NonAction]
+        private bool CheckForXmlExtension(UploadFileVM form, List<string> notificationErros)
+        {
+            bool areXmlExtensions = true;
+
+            foreach (IFormFile file in form.MultipleFiles)
+            {
+                string fileName = Path.GetFileNameWithoutExtension(file.FileName);
+                string extension = Path.GetExtension(file.FileName);
+
+                if (extension != ".xml")
+                {
+                    notificationErros.Add($"The {fileName} is not a xml file");
+                    form.Errors.Add($"The {fileName} is not a xml file");
+
+                    areXmlExtensions = false;
+                }
+            }
+
+            return areXmlExtensions;
         }
 
         [NonAction]

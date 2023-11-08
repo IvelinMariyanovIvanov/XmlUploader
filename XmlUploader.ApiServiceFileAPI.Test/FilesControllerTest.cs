@@ -1,12 +1,8 @@
 ﻿
 using Autofac.Extras.Moq;
-using Castle.Core.Internal;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using XmlUploader.ApiServiceFileAPI.Dtos;
 using XmlUploader.ApiServiceFileAPI.Services;
 using FilesController = XmlUploader.ApiServiceFileAPI.Controllers.FilesController;
 
@@ -51,8 +47,6 @@ namespace XmlUploader.ApiServiceFileAPI.Test
         public void ConvertXmlToJson_With_Empty_File(int fileLength)
         {
             // Arrange
-            var Mock = AutoMock.GetLoose();
-
             string emptyFile = string.Empty;
             string validFileNameAndExtenstion = "valid.xml";
 
@@ -86,8 +80,6 @@ namespace XmlUploader.ApiServiceFileAPI.Test
         public void ConvertXmlToJson_Convert_Valid_XmlContentAsync(string validXmlContent)
         {
             // Arrange
-            var Mock = AutoMock.GetLoose();
-          
             int fileLength = 111;
             string validFileNameAndExtenstion = "valid.xml";
 
@@ -124,8 +116,6 @@ namespace XmlUploader.ApiServiceFileAPI.Test
         public void ConvertXmlToJson_Convert_Valid_XmlContent_With_Valid_FileName_Extension(string validXmlContent, string fileName)
         {
             // Arrange
-            var Mock = AutoMock.GetLoose();
-
             int fileLength = 111;
             Mock<IFormFile> formFile = new Mock<IFormFile>();
 
@@ -162,8 +152,6 @@ namespace XmlUploader.ApiServiceFileAPI.Test
         public void ConvertXmlToJson_Convert_Valid_XmlContent_With_Invalid_FileName_Extension(string validXmlContent, string fileName)
         {
             // Arrange
-            var Mock = AutoMock.GetLoose();
-
             int fileLength = 111;
             Mock<IFormFile> formFile = new Mock<IFormFile>();
 
@@ -194,9 +182,7 @@ namespace XmlUploader.ApiServiceFileAPI.Test
         [InlineData("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<company>\r\n  <employees>\r\n    <employee>\r\n      <id>1</id>\r\n      <name>John Doe</name>\r\n      <position>Software Engineer</position>\r\n      <department>Engineering</department>\r\n    </employee>\r\n  </employees>\r\n</company>", "")]
         public void ConvertXmlToJson_Convert_Valid_XmlContent_With_Null_FileName(string validXmlContent, string fileName)
         {
-             // Arrange
-            var Mock = AutoMock.GetLoose();
-          
+            // Arrange   
             int fileLength = 111;
 
             Mock<IFormFile> formFile = new Mock<IFormFile>();
@@ -229,8 +215,6 @@ namespace XmlUploader.ApiServiceFileAPI.Test
         public void ConvertXmlToJson_Convert_Valid_XmlContent_With_Empty_FileName(string validXmlContent, string fileName)
         {
             // Arrange
-            var Mock = AutoMock.GetLoose();
-
             int fileLength = 111;
 
             Mock<IFormFile> formFile = new Mock<IFormFile>();
@@ -263,8 +247,6 @@ namespace XmlUploader.ApiServiceFileAPI.Test
         public void ConvertXmlToJson_Convert_Not_Valid_XmlContent(string invalidXmlContent)
         {
             // Arrange
-            var Mock = AutoMock.GetLoose();
-
             int fileLength = 111;
             string validFileNameAndExtenstion = "valid.xml";
 

@@ -10,7 +10,8 @@
             "progressBar": true
         }
 
-        toastr.info('@TempData["success"]')
+        var successList = @Html.Raw(Json.Serialize(TempData["success"]));
+        successList.forEach(x => toastr.info(x));
     </script>
 }
 
@@ -26,6 +27,7 @@
             "progressBar": true
         }
 
-        toastr.error('@TempData["error"]')
+        var errors = @Html.Raw(Json.Serialize(TempData["error"]));
+        errors.forEach(x => toastr.error(x));
     </script>
 }

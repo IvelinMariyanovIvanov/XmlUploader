@@ -4,7 +4,6 @@
     {
 
         public static string FileApiUrl { get; set; }
-        public const string JwtCookieTokenKey = "JwtCookieTokenKey";
 
         public enum ApiType
         {
